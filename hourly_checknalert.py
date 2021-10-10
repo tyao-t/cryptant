@@ -30,7 +30,7 @@ def getPriceMsg(name="Bitcoin"):
     else:
         sign2 = "🔻 " + str(percent_change2)[1:6] + "%"
 
-    price_message_to_convey = f"Hi! {name}'s current price is {this_hour_price[0:7]}, \
+    price_message_to_convey = f"There's some observable change in {name}'s current price! It is {this_hour_price[0:7]}, \
     \n{sign1} from last hour, \nand {sign2} from 8 hours ago.\n"
     return price_message_to_convey
 
@@ -67,7 +67,7 @@ def provideHourlyAlert(currency_name = "Bitcoin", phone_num = os.getenv("MY_PHON
 
     message = client.messages.create(messaging_service_sid=os.getenv("TWILIO_MESSAGING_SERVICE_SID"), body=full_message_to_convey, \
     to=phone_num)
-
+    """
     my_email = os.getenv("MY_EMAIL")
     my_password = os.getenv("MY_EMAIL_PASSWORD")
     full_email_to_convey = full_message_to_convey.replace("🔺", "up")
@@ -80,12 +80,10 @@ def provideHourlyAlert(currency_name = "Bitcoin", phone_num = os.getenv("MY_PHON
             from_addr=my_email,
             to_addrs=email_to,
             msg=f"Subject:{currency_name} Alert\n\n{full_email_to_convey}"
-        )
+        )"""
 
 #client = MongoClient('mongodb+sr4.mongodb.net/hdb?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE')
 #db = client.get_database('hdb')
 #people = db.people
 if __name__ == "__main__":
-    for person in list(people.find()):
-        provideHourlyAlert(name_to = person["name"], email_to = person["email"])
-        time.sleep(40)
+    provideHourlyAlert(name_to = "Tianhao")

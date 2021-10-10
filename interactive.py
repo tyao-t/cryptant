@@ -43,19 +43,24 @@ def sms_reply():
     phone_num_from = request.form["From"]
     mra = message_received.split(' ');
 
-    if mra[0] == "activate":
+    if mra[0] == "Activate":
         url = 'http://localhost:3000/activate'
         post_data = {'phone_num': phone_num_from, 'code': str(mra[1])}
-        requests.post(url, data = post_data)
+        aresult = requests.post(url, data = post_data).json()["aresult"]
+        if (aresult == "true"):
+            print("successfully activated")
+            resp = MessagingResponse()
+            resp.message("You have successfully been activated!")
+            return str(resp)
         return ""
 
     url = "http://localhost:3000/get_user"
     post_data = {'phone_num': phone_num_from}
     user = requests.post(url, data = post_data).json()["user"]
-    print(user)
-    if ("_fieldsProto" not in user) or ("activated" not in user["_fieldsProto"]) or (user["_fieldsProto"]["activated"] != "y"): 
+    #print(user)
+    if ("_fieldsProto" not in user) or ("activated" not in user["_fieldsProto"]) or (user["_fieldsProto"]["activated"]["stringValue"] != "y"): 
         print("User doesn't exist or not activated!")
-        return ""
+        return "" 
 
     #print(message_received)
     message_to_send = ""
@@ -66,6 +71,8 @@ def sms_reply():
     news0 = news_response["articles"][0];
     news0_message_to_convey = "1. " + news0["title"] + ".\n" + \
     "per " + news0["source"]["name"] + ": " + news0["url"] + "\n"
+    if (currency_name == "Ethereum"):
+        news0_message_to_convey = "[High magnitude of sentiment--More likely to be important] " + news0_message_to_convey
 
     reddit = praw.Reddit(client_id=os.getenv("REDDIT_CLIENT_ID"),
                          client_secret=os.getenv("REDDIT_CLIENT_SECRET"), password=os.getenv("REDDIT_PASSWORD"),
@@ -80,8 +87,10 @@ def sms_reply():
     ai_advice_message_to_convey = "AI Advice: " + getAIAdvice(currency_name)["conclusion"] \
     + ".\n"
 
+    fname = user["_fieldsProto"]["fname"]["stringValue"]
     if (len(mra) == 1):
         lang = "en"
+        message_to_send += f"Hi {fname}!\n"
         message_to_send += f"{currency_name}'s current price is {getCurrentPrice(currency_name)[0:7]} USD.\n\n"
         message_to_send += f"News headlines on {currency_name}:\n{news0_message_to_convey}\n"
         message_to_send += reddit_message_to_convey + "\n"

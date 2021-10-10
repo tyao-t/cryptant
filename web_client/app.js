@@ -40,9 +40,10 @@ app.post("/failure", (req,res) => {
     res.redirect("/");
 });
 
-app.post("/activate", (req,res) => {
+app.post("/activate", async (req,res) => {
     const phone_num = req.body.phone_num;
-    gfs.activate_user(phone_num, req.body.code)
+    result = await gfs.activate_user(phone_num, req.body.code)
+    res.send({aresult: result})
 });
 
 app.post("/get_user", async (req,res) => {

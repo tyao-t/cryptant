@@ -124,13 +124,15 @@ async function activate_user(phone_num, code) {
           activated: "y",
           code: code
       });
+      return "true";
   } else {
-      if (code !== doc._fieldsProto.code.stringValue) return
+      if (code !== doc._fieldsProto.code.stringValue) return "false";
       await document.update({
           fname: doc._fieldsProto.bfname.stringValue,
           lname: doc._fieldsProto.blname.stringValue,  
           activated: "y",
       });
+      return "true";
   }
 }
 
