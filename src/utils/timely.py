@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from twilio.rest import Client
-from cvs import *
+from core import *
 import unidecode as ud
 import time
 
@@ -23,7 +23,6 @@ def provideDailyUpdate(currency_name = "Bitcoin", phone_num = os.getenv("MY_PHON
 
     price_message_to_convey = CUR_DATE + " :Today's closing price of " + currency_name + " is " + getCurrentPrice(currency_name)[0:7] + " USD" + \
     ", " + sign + " from yesterday's closing price." + " High: " + high_price + " USD, Low: " + low_price + " USD.\n"
-    #print(price_message_to_convey)
 
     news_response = getNews(currency_name, num=2)
     news0 = news_response["articles"][0];
@@ -40,7 +39,6 @@ def provideDailyUpdate(currency_name = "Bitcoin", phone_num = os.getenv("MY_PHON
     greeting_message = f"Hi {name_to}!\n"
     full_message_to_convey = greeting_message + "\n" + price_message_to_convey + "\n" + "News headlines:\n" + news0_message_to_convey + news1_message_to_convey + \
     "\n" + ai_advice_message_to_convey;
-    print(full_message_to_convey)
 
     account_sid = os.getenv("TWILIO_ACCOUNT_SID")
     auth_token = os.getenv("TWILIO_AUTH_TOKEN")
@@ -49,7 +47,6 @@ def provideDailyUpdate(currency_name = "Bitcoin", phone_num = os.getenv("MY_PHON
     message = client.messages.create(messaging_service_sid=os.getenv("TWILIO_MESSAGING_SERVICE_SID"), body=full_message_to_convey, \
     to=phone_num)
 
-    """
     my_email = os.getenv("MY_EMAIL")
     my_password = os.getenv("MY_EMAIL_PASSWORD")
     full_email_to_convey = full_message_to_convey.replace("🔺", "up")
@@ -62,16 +59,15 @@ def provideDailyUpdate(currency_name = "Bitcoin", phone_num = os.getenv("MY_PHON
             from_addr=my_email,
             to_addrs=email_to,
             msg=f"Subject:{currency_name} Daily Feed\n\n{full_email_to_convey}"
-        )"""
+        )
 
-"""client = MongoClient('mongodb+srv://tyao_admin:rriveryth7@cluster-telus-ehs.4nek4.mongodb.net/hdb?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE')
+client = MongoClient('mongodb+srv://tyao_admin:rriveryth7@cluster-telus-ehs.4nek4.mongodb.net/hdb?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE')
 db = client.get_database('hdb')
-people = db.people"""
-#print(list(people.find()))
+people = db.people
 provideDailyUpdate()
-"""
+
 if __name__ == "__main__":
     for person in list(people.find()):
-        #print(person["name"] + " " + person["email"] + "\n")
+        print(person["name"] + " " + person["email"] + "\n")
         provideDailyUpdate(name_to = person["name"], email_to = person["email"])
-        time.sleep(40) """
+        time.sleep(40) 

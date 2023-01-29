@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import smtplib
 import praw
 from twilio.rest import Client
-from cvs import *
+from core import *
 from pymongo import MongoClient
 import unidecode as ud
 import time
@@ -38,7 +38,6 @@ def provideHourlyAlert(currency_name = "Bitcoin", phone_num = os.getenv("MY_PHON
     reddit = praw.Reddit(client_id=os.getenv("REDDIT_CLIENT_ID"),
                          client_secret=os.getenv("REDDIT_CLIENT_SECRET"), password=os.getenv("REDDIT_PASSWORD"),
                          user_agent='PRAW', username=os.getenv("REDDIT_USER_NAME"))
-    #print(reddit.user.me())
 
     reddit_message_to_convey = f"Hot discussion on {currency_name} since last hour:\n"
 
@@ -46,7 +45,6 @@ def provideHourlyAlert(currency_name = "Bitcoin", phone_num = os.getenv("MY_PHON
         reddit_message_to_convey += f"{post.title} {post.url} {post.ups} upvotes, {post.num_comments} comments.\n"
 
     price_message_to_convey = getPriceMsg(currency_name)
-#print(price_message_to_convey)
 
     news_response = getNews(currency_name, num=1, frame="1D")
     news0 = news_response["articles"][0];
@@ -67,7 +65,7 @@ def provideHourlyAlert(currency_name = "Bitcoin", phone_num = os.getenv("MY_PHON
 
     message = client.messages.create(messaging_service_sid=os.getenv("TWILIO_MESSAGING_SERVICE_SID"), body=full_message_to_convey, \
     to=phone_num)
-    """
+    
     my_email = os.getenv("MY_EMAIL")
     my_password = os.getenv("MY_EMAIL_PASSWORD")
     full_email_to_convey = full_message_to_convey.replace("🔺", "up")
@@ -80,10 +78,10 @@ def provideHourlyAlert(currency_name = "Bitcoin", phone_num = os.getenv("MY_PHON
             from_addr=my_email,
             to_addrs=email_to,
             msg=f"Subject:{currency_name} Alert\n\n{full_email_to_convey}"
-        )"""
+        )
 
-#client = MongoClient('mongodb+sr4.mongodb.net/hdb?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE')
-#db = client.get_database('hdb')
-#people = db.people
+client = MongoClient('mongodb+sr4.mongodb.net/hdb?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE')
+db = client.get_database('hdb')
+people = db.people
 if __name__ == "__main__":
     provideHourlyAlert(name_to = "Tianhao")

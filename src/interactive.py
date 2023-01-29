@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect
 from twilio.twiml.messaging_response import MessagingResponse
-from cvs import *
+from core import *
 from hourly_checknalert import getPriceMsg
 app = Flask(__name__)
 from translation_and_language_sentiment import *
@@ -57,12 +57,10 @@ def sms_reply():
     url = "http://localhost:3000/get_user"
     post_data = {'phone_num': phone_num_from}
     user = requests.post(url, data = post_data).json()["user"]
-    #print(user)
     if ("_fieldsProto" not in user) or ("activated" not in user["_fieldsProto"]) or (user["_fieldsProto"]["activated"]["stringValue"] != "y"): 
         print("User doesn't exist or not activated!")
         return "" 
 
-    #print(message_received)
     message_to_send = ""
 
     currency_name = mra[0];
@@ -78,7 +76,6 @@ def sms_reply():
                          client_secret=os.getenv("REDDIT_CLIENT_SECRET"), password=os.getenv("REDDIT_PASSWORD"),
                          user_agent='PRAW', username=os.getenv("REDDIT_USER_NAME"))
 
-    #print(reddit.user.me())
     reddit_message_to_convey = f"Hot discussion on {currency_name} since last hour:\n"
 
     for post in reddit.subreddit(currency_name).top("day", limit=1):
